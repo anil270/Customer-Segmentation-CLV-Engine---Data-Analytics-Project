@@ -1,63 +1,66 @@
-# Consumer360 - Customer Segmentation & CLV Engine
+#  Consumer360 - Retail Analytics & Customer Intelligence
 
 ## Project Overview
+Consumer360 is an automated end-to-end data pipeline designed for e-commerce retailers. It transforms raw transaction data into professional business insights through RFM Customer Segmentation and Market Basket Analysis.
 
-**Consumer360** is a customer segmentation and lifetime value analysis system for e-commerce retailers. It automates the process of transforming raw transaction data into actionable business insights.
+### Key Features
+1. **Automated ETL**: Cleans raw Excel data and loads it into a SQL Server Star Schema.
+2. **RFM Segmentation**: Categorizes customers (Champions, Loyal, At-Risk) using Python.
+3. **Predictive CLV**: Uses the `lifetimes` library to predict future customer value.
+4. **Cohort Analysis**: Tracks customer retention rates grouped by first purchase month.
+5. **Market Basket Analysis**: Identifies product associations to drive cross-selling.
+6. **Live Verification**: Instant health-check script to confirm data integrity in SQL Server.
+7. **Smart Scheduling**: Automatically updates the entire database every Sunday at 11 PM.
 
-### Solution Architecture
-Built an end-to-end automated analytics pipeline that:
-1. **ETL**: Cleans, validates, and loads transaction data into SQL Server.
-2. **RFM Modeling**: Segments customers into Champions, Loyal, At-Risk, etc.
-3. **Market Basket Analysis**: Identifies product association rules for cross-selling.
-4. **Insights Dashboard**: Provides a professional HTML presentation of live KPIs.
-5. **Automation**: Fully scheduled weekly updates.
+---
 
-## Tech Stack
-
+##  Tech Stack
 | Component | Technology |
 |---|---|
-| Data Source | Excel (Online Retail II dataset) |
-| Pipeline Engine | Python (Pandas, MLxtend, PyODBC) |
-| Database | SQL Server (Star Schema) |
-| Visualization | Power BI / Interactive HTML Deck |
-| Automation | Python (Windows Task Scheduler integration) |
+| **Programming** | Python (Pandas, MLxtend, SQLAlchemy) |
+| **Database** | SQL Server (Star Schema Architecture) |
+| **Automation** | Windows Task Scheduler |
+| **Environment** | Virtual Environment (.venv) |
 
-## How to Run
+---
 
-### 1. Automated Execution (Recommended)
-The project is scheduled to run every **Sunday at 11:00 PM** via Windows Task Scheduler.
-*   **To Manage Schedule**: Run `python python/schedule_task.py` to re-register or update the schedule.
+##  How to Run
 
-### 2. Manual Execution Options
+### 1. The "One-Click" Full Pipeline (Recommended)
+This runs the entire process: Cleaning -> Loading -> RFM -> MBA -> Verification.
+```bash
+python python/automation.py
+```
 
-#### Option A: Full Master Pipeline (Recommended)
-Run everything in one go (ETL + RFM + MBA):
-*   `python python/automation.py`
+### 2. Manual Health Check
+To verify if your SQL Server tables have fresh data:
+```bash
+python python/verify.py
+```
 
-#### Option B: Modular Execution (Step-by-Step)
-If you want to run specific components individually:
-*   **Step 1 (ETL)**: `python python/data_cleaning.py`
-*   **Step 2 (RFM)**: `python python/rfm_analysis.py`
-*   **Step 3 (MBA)**: `python python/market_basket.py`
+### 3. Setup Automation (Scheduling)
+To register the pipeline to run automatically every Sunday at 11 PM:
+```bash
+python python/schedule_task.py
+```
 
-## Viewing Results
-*   **Interactive Insights**: Open `presentation.html` in any web browser.
-*   **SQL Database**: Connect to SQL Server and explore the `Consumer360` database.
-*   **Processed Files**: CSV outputs are stored in `data/processed/`.
+---
 
-## Project Structure
+##  Project Structure
 ```text
 Consumer360/
 ├── data/
 │   ├── raw/             # Original Excel dataset
-│   └── processed/       # Cleaned CSVs (Retail, RFM, MBA)
-├── logs/                 # Pipeline execution logs
+│   └── processed/       # Cleaned CSV outputs
+├── sql/
+│   └── schema.sql       # SQL Server Table Structures
 ├── python/
-│   ├── automation.py    # Master script (Pipeline)
-│   ├── data_cleaning.py # Modular ETL script
-│   ├── rfm_analysis.py  # Modular RFM model
-│   ├── market_basket.py # Modular MBA script
-│   └── schedule_task.py # Scheduling manager
-├── presentation.html    # Interactive Business Insights deck
-└── README.md            # Documentation
+│   ├── automation.py    # Master Orchestrator (Main Entry Point)
+│   ├── data_cleaning.py # ETL & Data Transformation
+│   ├── rfm_analysis.py  # Customer Segmentation Logic
+│   ├── market_basket.py # Product Association Logic
+│   ├── verify.py        # Live Database Health Check
+│   └── schedule_task.py # Sunday Night Automation Setup
+├── requirements.txt     # Essential Libraries
+└── README.md            # Project Documentation
 ```
