@@ -5,217 +5,108 @@
 
 import pandas as pd
 import pyodbc
-from mlxtend.frequent_patterns import apriori, association_rules, fpgrowth
+import urllib
+from sqlalchemy import create_engine
+from sqlalchemy.types import NVARCHAR, Float
 from mlxtend.preprocessing import TransactionEncoder
-import numpy as np
-import warnings
+from mlxtend.frequent_patterns import fpgrowth, association_rules
 
-# Suppress pandas SQL warning for pyodbc
-warnings.filterwarnings('ignore', category=UserWarning, message='.*pandas only supports SQLAlchemy connectable.*')
+print("Starting Market Basket Analysis...")
 
-print("="*70)
-print("CONSUMER360: WEEK 2 - MARKET BASKET ANALYSIS")
-print("="*70)
+# 1. Connect to SQL Server
+print("Connecting to SQL Server...")
+SERVER = r"DESKTOP-94L3J1Q\SQLEXPRESS"
+DATABASE = "Consumer360"
 
-# ══════════════════════════════════════════════════════════════
-# STEP 1: CONNECT TO SQL SERVER
-# ══════════════════════════════════════════════════════════════
+conn_str = f"Driver={{ODBC Driver 17 for SQL Server}};Server={SERVER};Database={DATABASE};Trusted_Connection=yes;Encrypt=no;"
+conn = pyodbc.connect(conn_str)
 
-print("\n[STEP 1] Connecting to SQL Server...")
-
-import pyodbc
-SERVER = r'DESKTOP-94L3J1Q\SQLEXPRESS'
-DATABASE = 'Consumer360'
-
-try:
-    conn = pyodbc.connect(
-        'Driver={ODBC Driver 17 for SQL Server};'
-        f'Server={SERVER};'
-        f'Database={DATABASE};'
-        'Trusted_Connection=yes;'
-        'Encrypt=no;'
-    )
-    print(f"✓ Connected to SQL Server")
-
-except Exception as e:
-    print(f"✗ Error: {e}")
-    exit()
-
-# ══════════════════════════════════════════════════════════════
-# STEP 2: LOAD TRANSACTION DATA
-# ══════════════════════════════════════════════════════════════
-
-print("\n[STEP 2] Loading transaction data...")
-
+# 2. Load the transaction data from SQL Server
+print("Loading transaction data from database...")
 query = """
 SELECT 
-    f.invoice_id,
-    f.product_id,
-    p.description
+    f.invoice_id, 
+    p.description 
 FROM fact_sales f
 JOIN dim_product p ON f.product_id = p.product_id
-ORDER BY f.invoice_id, f.product_id
 """
-
+import warnings
+warnings.filterwarnings("ignore", message=".*pandas only supports SQLAlchemy connectable.*")
 df = pd.read_sql(query, conn)
-print(f"✓ Loaded {len(df):,} transaction items")
-print(f"  - Unique invoices: {df['invoice_id'].nunique():,}")
-print(f"  - Unique products: {df['product_id'].nunique():,}")
+print(f"Loaded {len(df)} items.")
 
-# ══════════════════════════════════════════════════════════════
-# STEP 3: CREATE TRANSACTION-PRODUCT MATRIX
-# ══════════════════════════════════════════════════════════════
+# 3. Group items by Invoice to create "Shopping Baskets"
+print("Grouping products into shopping baskets...")
+df = df.dropna(subset=['description'])
+baskets = df.groupby('invoice_id')['description'].apply(list).values
+print(f"Total number of transactions (baskets): {len(baskets)}")
 
-print("\n[STEP 3] Creating transaction-product matrix...")
-
-# Group products by invoice
-transactions = df.groupby('invoice_id')['product_id'].apply(list).values
-
-print(f"✓ Created {len(transactions):,} transactions")
-print(f"  - Avg items per transaction: {np.mean([len(t) for t in transactions]):.2f}")
-
-# ══════════════════════════════════════════════════════════════
-# STEP 4: ONE-HOT ENCODE TRANSACTIONS
-# ══════════════════════════════════════════════════════════════
-
-print("\n[STEP 4] One-hot encoding transactions...")
-
+# 4. Convert baskets into a True/False matrix (required by the algorithm)
+print("Converting baskets for the algorithm...")
 te = TransactionEncoder()
-te_ary = te.fit(transactions).transform(transactions)
-df_encoded = pd.DataFrame(te_ary, columns=te.columns_)
+te_array = te.fit(baskets).transform(baskets)
+basket_matrix = pd.DataFrame(te_array, columns=te.columns_)
 
-print(f"✓ Encoded matrix shape: {df_encoded.shape}")
-print(f"  - Transactions: {df_encoded.shape[0]:,}")
-print(f"  - Products: {df_encoded.shape[1]:,}")
+# 5. Find frequent item combinations
+print("Finding frequent items (this might take a moment)...")
+frequent_items = fpgrowth(basket_matrix, min_support=0.01, use_colnames=True)
 
-# ══════════════════════════════════════════════════════════════
-# STEP 5: APPLY APRIORI ALGORITHM
-# ══════════════════════════════════════════════════════════════
+# 6. Generate rules (If customer buys A -> they will likely buy B)
+print("Generating rules...")
+rules = association_rules(frequent_items, metric="confidence", min_threshold=0.1)
 
-print("\n[STEP 5] Applying FP-Growth algorithm (memory efficient)...")
+# Keep only strong rules (Confidence >= 50% and Lift > 1.0)
+strong_rules = rules[(rules['confidence'] >= 0.5) & (rules['lift'] > 1.0)].copy()
+strong_rules = strong_rules.sort_values('lift', ascending=False)
 
-# Find frequent itemsets (min 1% support)
-frequent_itemsets = fpgrowth(df_encoded, min_support=0.01, use_colnames=True)
+# 7. Format the output to be easily readable
+print("Formatting the final results...")
+formatted_rules = []
 
-print(f"✓ Found {len(frequent_itemsets):,} frequent itemsets")
-print(f"  - Min support: 1%")
-print(f"  - Support range: {frequent_itemsets['support'].min():.4f} to {frequent_itemsets['support'].max():.4f}")
-
-# ══════════════════════════════════════════════════════════════
-# STEP 6: GENERATE ASSOCIATION RULES
-# ══════════════════════════════════════════════════════════════
-
-print("\n[STEP 6] Generating association rules...")
-
-# Generate rules
-rules = association_rules(frequent_itemsets, metric="confidence", min_threshold=0.1)
-
-# Calculate lift
-rules['lift'] = rules['lift'].round(2)
-rules['confidence'] = rules['confidence'].round(2)
-rules['support'] = rules['support'].round(4)
-
-print(f"✓ Generated {len(rules):,} association rules")
-
-# ══════════════════════════════════════════════════════════════
-# STEP 7: FILTER HIGH-QUALITY RULES
-# ══════════════════════════════════════════════════════════════
-
-print("\n[STEP 7] Filtering high-quality rules...")
-
-# Filter rules: confidence > 50% and lift > 1.0
-high_quality_rules = rules[(rules['confidence'] >= 0.5) & (rules['lift'] > 1.0)].copy()
-
-# Sort by lift
-high_quality_rules = high_quality_rules.sort_values('lift', ascending=False)
-
-print(f"✓ Found {len(high_quality_rules):,} high-quality rules")
-print(f"  - Confidence >= 50%")
-print(f"  - Lift > 1.0")
-
-# ══════════════════════════════════════════════════════════════
-# STEP 8: FORMAT RULES FOR OUTPUT
-# ══════════════════════════════════════════════════════════════
-
-print("\n[STEP 8] Formatting rules...")
-
-# Extract product names
-product_map = dict(zip(df['product_id'], df['description']))
-
-output_rules = []
-for idx, rule in high_quality_rules.iterrows():
-    antecedents = ', '.join([product_map.get(item, item) for item in rule['antecedents']])
-    consequents = ', '.join([product_map.get(item, item) for item in rule['consequents']])
+for index, row in strong_rules.iterrows():
+    product_a = ", ".join(list(row['antecedents']))
+    product_b = ", ".join(list(row['consequents']))
     
-    output_rules.append({
-        'Product_A': antecedents[:100],  # Truncate for readability
-        'Product_B': consequents[:100],
-        'Support': rule['support'],
-        'Confidence': rule['confidence'],
-        'Lift': rule['lift']
+    formatted_rules.append({
+        'Product_A': product_a[:250], # Truncate if too long
+        'Product_B': product_b[:250],
+        'Support': round(row['support'], 4),
+        'Confidence': round(row['confidence'], 2),
+        'Lift': round(row['lift'], 2)
     })
 
-output_df = pd.DataFrame(output_rules)
+results_df = pd.DataFrame(formatted_rules)
+print(f"Found {len(results_df)} strong product combinations.")
 
-print(f"✓ Formatted {len(output_df):,} rules")
-
-# ══════════════════════════════════════════════════════════════
-# STEP 9: SAVE RESULTS
-# ══════════════════════════════════════════════════════════════
-
-# ... (Step 9: Save CSV - jo already hai) ...
+# 8. Save results to CSV
 output_path = 'data/processed/market_basket_rules.csv'
-output_df.to_csv(output_path, index=False)
-print(f"✓ Saved to: {output_path}")
+print(f"Saving results to {output_path}...")
+results_df.to_csv(output_path, index=False)
 
-# ✅ NEW: Add this block to save to SQL Server
-print("\n[STEP 9.1] Saving to SQL Server for Power BI...")
-try:
-    from sqlalchemy import create_engine
-    from sqlalchemy.types import NVARCHAR, Float
-    import urllib
-    
-    params = urllib.parse.quote_plus(
-        'Driver={ODBC Driver 17 for SQL Server};'
-        f'Server={SERVER};'
-        f'Database={DATABASE};'
-        'Trusted_Connection=yes;'
-        'Encrypt=no;'
-    )
-    engine = create_engine(f"mssql+pyodbc:///?odbc_connect={params}")
+# 9. Save results back to SQL Server
+print("Saving results to SQL Server...")
+params = urllib.parse.quote_plus(conn_str)
+engine = create_engine(f"mssql+pyodbc:///?odbc_connect={params}")
 
-    # Create table in SQL Server
-    output_df.to_sql(
-        'market_basket_rules', 
-        engine, 
-        if_exists='replace',  # Replace agar pehle se hai toh
-        index=False,
-        dtype={
-            'Product_A': NVARCHAR(255),
-            'Product_B': NVARCHAR(255),
-            'Support': Float(),
-            'Confidence': Float(),
-            'Lift': Float()
-        }
-    )
-    print(f"✓ Table 'market_basket_rules' created in SQL Server!")
-except Exception as e:
-    print(f"✗ Error saving to SQL: {e}")
-
-# ══════════════════════════════════════════════════════════════
-# STEP 10: TOP INSIGHTS
-# ══════════════════════════════════════════════════════════════
-
-print("\n[STEP 10] Top 10 Product Associations:")
-
-top_rules = output_df.head(10)
-for idx, (_, rule) in enumerate(top_rules.iterrows(), 1):
-    print(f"\n  {idx}. {rule['Product_A']}")
-    print(f"     → {rule['Product_B']}")
-    print(f"     Confidence: {rule['Confidence']*100:.1f}% | Lift: {rule['Lift']:.2f}x")
+results_df.to_sql(
+    "market_basket_rules", 
+    engine, 
+    if_exists="replace", 
+    index=False,
+    dtype={
+        "Product_A": NVARCHAR(255),
+        "Product_B": NVARCHAR(255),
+        "Support": Float(),
+        "Confidence": Float(),
+        "Lift": Float()
+    }
+)
+print("Table 'market_basket_rules' updated in SQL Server!")
 
 conn.close()
 
-# ══════════════════════════════════════════════════════════════
-# FINAL SUMMARY
-# ══════════════════════════════════════════════════════════════
+# 10. Show top 5 insights
+print("\nTop 5 Most Frequently Bought Together Products:")
+print(results_df.head(5).to_string(index=False))
+
+print("\nMarket Basket Analysis Complete!")
