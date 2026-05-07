@@ -1,86 +1,41 @@
 -- ═══════════════════════════════════════════════════════════
--- CONSUMER360: STAR SCHEMA
--- Created: Week 1
--- Purpose: Define database structure for retail analytics
+-- CONSUMER360: DATABASE SCHEMA
+-- Purpose: Creates the clean Star Schema tables for the project
 -- ═══════════════════════════════════════════════════════════
 
--- ─── TABLE 1: DIMENSION - CUSTOMER ──────────────────────────
--- Purpose: Store customer information
--- Rows: ~4,000 unique customers
--- Key: customer_id (Primary Key)
+-- 1. Reset Database (Drop child first)
+DROP TABLE IF EXISTS dbo.fact_sales;
+DROP TABLE IF EXISTS dbo.dim_customer;
+DROP TABLE IF EXISTS dbo.dim_product;
+DROP TABLE IF EXISTS dbo.dim_date;
 
-CREATE TABLE IF NOT EXISTS dim_customer (
-    customer_id         INTEGER PRIMARY KEY,
-    country             TEXT NOT NULL,
-    first_purchase_date DATE,
-    created_at          TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+-- 2. Create Dimensions (Lookups)
+CREATE TABLE dbo.dim_customer (
+    customer_id INT PRIMARY KEY, country NVARCHAR(100), 
+    first_purchase_date DATE, created_at DATETIME2 DEFAULT SYSUTCDATETIME()
 );
 
--- ─── TABLE 2: DIMENSION - PRODUCT ──────────────────────────
--- Purpose: Store product information
--- Rows: ~3,600 unique products
--- Key: product_id (Primary Key)
-
-CREATE TABLE IF NOT EXISTS dim_product (
-    product_id          TEXT PRIMARY KEY,
-    description         TEXT NOT NULL,
-    category            TEXT,
-    created_at          TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+CREATE TABLE dbo.dim_product (
+    product_id NVARCHAR(50) PRIMARY KEY, description NVARCHAR(400), 
+    category NVARCHAR(100), created_at DATETIME2 DEFAULT SYSUTCDATETIME()
 );
 
--- ─── TABLE 3: DIMENSION - DATE ─────────────────────────────
--- Purpose: Store date information for time-based analysis
--- Rows: 365 (one per day)
--- Key: date_id (Primary Key)
-
-CREATE TABLE IF NOT EXISTS dim_date (
-    date_id             DATE PRIMARY KEY,
-    day                 INTEGER,
-    month               INTEGER,
-    quarter             INTEGER,
-    year                INTEGER,
-    week_of_year        INTEGER,
-    day_of_week         TEXT,
-    is_weekend          BOOLEAN
+CREATE TABLE dbo.dim_date (
+    date_id DATE PRIMARY KEY, day INT, month INT, quarter INT, year INT, 
+    week_of_year INT, day_of_week NVARCHAR(20), is_weekend BIT
 );
 
--- ─── TABLE 4: FACT - SALES ─────────────────────────────────
--- Purpose: Store transaction data (central fact table)
--- Rows: ~500,000 transactions
--- Keys: sale_id (Primary Key), customer_id/product_id/invoice_date (Foreign Keys)
-
-CREATE TABLE IF NOT EXISTS fact_sales (
-    sale_id             INTEGER PRIMARY KEY AUTOINCREMENT,
-    invoice_id          TEXT NOT NULL,
-    customer_id         INTEGER NOT NULL,
-    product_id          TEXT NOT NULL,
-    invoice_date        DATE NOT NULL,
-    quantity            INTEGER NOT NULL,
-    unit_price          REAL NOT NULL,
-    total_amount        REAL NOT NULL,
-    
-    -- Foreign Key Constraints
-    FOREIGN KEY (customer_id) REFERENCES dim_customer(customer_id),
-    FOREIGN KEY (product_id) REFERENCES dim_product(product_id),
-    FOREIGN KEY (invoice_date) REFERENCES dim_date(date_id)
+-- 3. Create Fact Table (Sales)
+CREATE TABLE dbo.fact_sales (
+    sale_id INT IDENTITY(1,1) PRIMARY KEY,
+    invoice_id NVARCHAR(50) NOT NULL,
+    customer_id INT FOREIGN KEY REFERENCES dbo.dim_customer(customer_id),
+    product_id NVARCHAR(50) FOREIGN KEY REFERENCES dbo.dim_product(product_id),
+    invoice_date DATE FOREIGN KEY REFERENCES dbo.dim_date(date_id),
+    quantity INT, unit_price DECIMAL(18,2), total_amount DECIMAL(18,2)
 );
 
--- ─── INDEXES FOR PERFORMANCE ───────────────────────────────
--- Purpose: Speed up queries on frequently filtered columns
--- These are the columns we'll use in WHERE and JOIN clauses
-
-CREATE INDEX IF NOT EXISTS idx_fact_customer 
-ON fact_sales(customer_id);
-
-CREATE INDEX IF NOT EXISTS idx_fact_product 
-ON fact_sales(product_id);
-
-CREATE INDEX IF NOT EXISTS idx_fact_date 
-ON fact_sales(invoice_date);
-
-CREATE INDEX IF NOT EXISTS idx_fact_invoice 
-ON fact_sales(invoice_id);
-
--- ═══════════════════════════════════════════════════════════
--- END OF SCHEMA
--- ═══════════════════════════════════════════════════════════
+-- 4. Create Indexes for Dashboard Speed
+CREATE INDEX idx_customer ON dbo.fact_sales(customer_id);
+CREATE INDEX idx_product  ON dbo.fact_sales(product_id);
+CREATE INDEX idx_date     ON dbo.fact_sales(invoice_date);
