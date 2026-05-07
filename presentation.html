@@ -1,255 +1,244 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Consumer360 – Final Presentation</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
-<style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Inter',sans-serif;background:#0a0e1a;color:#e8eaf6;overflow-x:hidden}
-.slide{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:60px 40px;position:relative;overflow:hidden}
-.slide::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 20% 50%,rgba(99,102,241,.15) 0%,transparent 60%),radial-gradient(ellipse at 80% 20%,rgba(236,72,153,.1) 0%,transparent 50%);pointer-events:none}
-h1{font-size:clamp(2rem,5vw,4rem);font-weight:800;background:linear-gradient(135deg,#818cf8,#c084fc,#fb7185);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-align:center;line-height:1.1}
-h2{font-size:clamp(1.4rem,3vw,2.2rem);font-weight:700;color:#818cf8;margin-bottom:8px}
-.subtitle{font-size:1.1rem;color:#94a3b8;margin-top:12px;text-align:center}
-.badge{display:inline-block;background:rgba(99,102,241,.2);border:1px solid rgba(99,102,241,.4);color:#818cf8;padding:4px 14px;border-radius:20px;font-size:.85rem;margin:6px 4px}
-.section-title{font-size:1rem;text-transform:uppercase;letter-spacing:3px;color:#64748b;margin-bottom:30px;text-align:center}
-.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px;width:100%;max-width:1100px;margin:20px 0}
-.kpi{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:28px 24px;text-align:center;transition:transform .3s,border-color .3s}
-.kpi:hover{transform:translateY(-4px);border-color:rgba(99,102,241,.5)}
-.kpi-value{font-size:2.2rem;font-weight:800;background:linear-gradient(135deg,#818cf8,#c084fc);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.kpi-label{font-size:.85rem;color:#64748b;margin-top:6px;text-transform:uppercase;letter-spacing:1px}
-.chart-wrap{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:20px;padding:30px;width:100%;max-width:900px;margin:20px 0}
-.insight-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;max-width:1100px;width:100%;margin:20px 0}
-.insight-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:24px;border-left:4px solid}
-.insight-card.red{border-left-color:#f43f5e}
-.insight-card.green{border-left-color:#10b981}
-.insight-card.blue{border-left-color:#3b82f6}
-.insight-card.purple{border-left-color:#8b5cf6}
-.insight-card h3{font-size:1rem;font-weight:700;margin-bottom:8px}
-.insight-card p{font-size:.9rem;color:#94a3b8;line-height:1.6}
-.stat{font-size:1.6rem;font-weight:800;color:#818cf8}
-.nav{position:fixed;right:24px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:10px;z-index:99}
-.nav a{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.2);display:block;transition:background .3s}
-.nav a:hover,.nav a.active{background:#818cf8}
-.divider{width:60px;height:3px;background:linear-gradient(90deg,#818cf8,#c084fc);border-radius:2px;margin:16px auto}
-.tag{display:inline-block;background:rgba(16,185,129,.15);border:1px solid rgba(16,185,129,.3);color:#10b981;padding:3px 12px;border-radius:20px;font-size:.8rem;margin:3px}
-.tag.warn{background:rgba(244,63,94,.15);border-color:rgba(244,63,94,.3);color:#f43f5e}
-.tag.info{background:rgba(59,130,246,.15);border-color:rgba(59,130,246,.3);color:#60a5fa}
-table{width:100%;border-collapse:collapse;font-size:.9rem}
-th{padding:12px 16px;background:rgba(99,102,241,.15);color:#818cf8;text-align:left;font-weight:600;font-size:.8rem;text-transform:uppercase;letter-spacing:1px}
-td{padding:11px 16px;border-bottom:1px solid rgba(255,255,255,.05);color:#cbd5e1}
-tr:hover td{background:rgba(99,102,241,.07)}
-.pipeline-steps{display:flex;gap:0;max-width:900px;width:100%;margin:30px 0;flex-wrap:wrap;justify-content:center}
-.step{flex:1;min-width:130px;text-align:center;position:relative;padding:20px 10px}
-.step::after{content:'→';position:absolute;right:-12px;top:50%;transform:translateY(-50%);color:#64748b;font-size:1.2rem}
-.step:last-child::after{display:none}
-.step-icon{width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,rgba(99,102,241,.3),rgba(196,130,252,.3));border:2px solid rgba(99,102,241,.5);display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin:0 auto 10px}
-.step-label{font-size:.8rem;color:#94a3b8;margin-top:4px}
-.step-title{font-size:.9rem;font-weight:600;color:#e2e8f0}
-.footer-slide{background:linear-gradient(135deg,rgba(99,102,241,.1),rgba(196,130,252,.1))}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consumer360 – Final Business Insights</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        /* DESIGN SYSTEM & GLOBAL STYLES */
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:'Inter',sans-serif; background:#0a0e1a; color:#e8eaf6; overflow-x:hidden; scroll-behavior:smooth; }
+        
+        .slide { min-height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center; padding:60px 40px; position:relative; border-bottom:1px solid rgba(255,255,255,0.05); text-align:center; }
+        .slide::before { content:''; position:absolute; inset:0; background:radial-gradient(ellipse at 20% 50%,rgba(99,102,241,0.1) 0%,transparent 60%), radial-gradient(ellipse at 80% 20%,rgba(236,72,153,0.05) 0%,transparent 50%); pointer-events:none; }
+        
+        h1 { font-size:clamp(2.5rem,6vw,4.5rem); font-weight:800; background:linear-gradient(135deg,#818cf8,#c084fc,#fb7185); -webkit-background-clip:text; -webkit-text-fill-color:transparent; line-height:1.1; }
+        h2 { font-size:clamp(1.5rem,3vw,2.5rem); font-weight:700; color:#818cf8; margin-bottom:10px; }
+        .subtitle { font-size:1.2rem; color:#94a3b8; margin-top:15px; max-width:700px; }
+        .section-title { font-size:0.9rem; text-transform:uppercase; letter-spacing:4px; color:#64748b; margin-bottom:30px; }
+        .divider { width:80px; height:4px; background:linear-gradient(90deg,#818cf8,#c084fc); border-radius:2px; margin:20px auto; }
+        
+        .kpi-grid, .insight-grid { display:grid; width:100%; max-width:1100px; margin:30px 0; gap:20px; }
+        .kpi-grid { grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); }
+        .insight-grid { grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:25px; text-align:left; }
+        
+        .kpi, .insight-card { background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:20px; padding:30px 20px; transition:all 0.3s ease; }
+        .kpi:hover { transform:translateY(-5px); border-color:rgba(99,102,241,0.4); }
+        .kpi-value { font-size:2.2rem; font-weight:800; color:#fff; }
+        .kpi-label { font-size:0.8rem; color:#64748b; margin-top:8px; text-transform:uppercase; letter-spacing:1px; }
+        
+        .chart-container { background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); border-radius:24px; padding:30px; width:100%; max-width:950px; margin:20px 0; display:flex; justify-content:center; align-items:center; }
+        
+        .insight-card { position:relative; overflow:hidden; border-radius:18px; padding:25px; }
+        .insight-card::before { content:''; position:absolute; left:0; top:0; bottom:0; width:4px; background:#818cf8; }
+        .insight-card.priority::before { background:#f43f5e; }
+        .insight-card.success::before { background:#10b981; }
+        .insight-card h3 { font-size:1.1rem; margin-bottom:10px; color:#fff; }
+        .insight-card p { font-size:0.95rem; color:#94a3b8; line-height:1.6; }
+        
+        .pipeline-flow { display:flex; justify-content:center; align-items:center; gap:20px; flex-wrap:wrap; margin-top:40px; }
+        .step { width:150px; }
+        .step-circle { width:60px; height:60px; background:linear-gradient(135deg,#4f46e5,#9333ea); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.5rem; margin:0 auto 15px; box-shadow:0 0 20px rgba(79,70,229,0.3); }
+        .step-name { font-weight:700; font-size:0.9rem; }
+        .step-desc { font-size:0.75rem; color:#64748b; margin-top:4px; }
+        
+        .badge { background:rgba(99,102,241,0.15); color:#818cf8; padding:6px 15px; border-radius:30px; font-size:0.85rem; margin:5px; border:1px solid rgba(99,102,241,0.3); display:inline-block; }
+        
+        .dot-nav { position:fixed; right:30px; top:50%; transform:translateY(-50%); display:flex; flex-direction:column; gap:12px; z-index:100; }
+        .dot-nav a { width:10px; height:10px; background:rgba(255,255,255,0.2); border-radius:50%; transition:all 0.3s ease; }
+        .dot-nav a.active { background:#818cf8; transform:scale(1.5); box-shadow:0 0 10px rgba(129,140,248,0.5); }
+    </style>
 </head>
 <body>
 
-<nav class="nav" id="sidenav">
-  <a href="#s1" class="active"></a>
-  <a href="#s2"></a>
-  <a href="#s3"></a>
-  <a href="#s4"></a>
-  <a href="#s5"></a>
-  <a href="#s6"></a>
-  <a href="#s7"></a>
-</nav>
-
-<!-- SLIDE 1: TITLE -->
-<section class="slide" id="s1">
-  <div style="text-align:center;max-width:800px">
-    <p class="section-title">Internship Final Presentation</p>
-    <h1>Consumer360</h1>
-    <div class="divider"></div>
-    <p class="subtitle">End-to-End Retail Analytics Pipeline<br>From Raw Data to Actionable Business Intelligence</p>
-    <div style="margin-top:30px">
-      <span class="badge">5,924 Customers</span>
-      <span class="badge">£15.97M Revenue</span>
-      <span class="badge">775K Transactions</span>
-      <span class="badge">4,645 Products</span>
+    <!-- SIDE NAVIGATION -->
+    <div class="dot-nav" id="dotNav">
+        <a href="#intro" class="active"></a><a href="#kpi"></a><a href="#trends"></a>
+        <a href="#geo"></a><a href="#rfm-dist"></a><a href="#rfm-scatter"></a>
+        <a href="#products"></a><a href="#retention"></a><a href="#clv"></a><a href="#insights"></a><a href="#tech"></a>
     </div>
-    <p style="margin-top:40px;color:#475569;font-size:.9rem">Data: Online Retail II Dataset &nbsp;|&nbsp; Period: Dec 2009 – Dec 2011</p>
-  </div>
-</section>
 
-<!-- SLIDE 2: KPIs -->
-<section class="slide" id="s2">
-  <p class="section-title">Business Overview</p>
-  <h2>Key Performance Indicators</h2>
-  <div class="divider"></div>
-  <div class="kpi-grid">
-    <div class="kpi"><div class="kpi-value">£15.97M</div><div class="kpi-label">Total Revenue</div></div>
-    <div class="kpi"><div class="kpi-value">5,924</div><div class="kpi-label">Unique Customers</div></div>
-    <div class="kpi"><div class="kpi-value">775,137</div><div class="kpi-label">Transactions</div></div>
-    <div class="kpi"><div class="kpi-value">4,645</div><div class="kpi-label">Products</div></div>
-    <div class="kpi"><div class="kpi-value">£20.61</div><div class="kpi-label">Avg Order Value</div></div>
-    <div class="kpi"><div class="kpi-value">38</div><div class="kpi-label">Countries</div></div>
-  </div>
-</section>
+    <!-- SLIDE 1: INTRODUCTION -->
+    <section class="slide" id="intro">
+        <p class="section-title">Project Overview</p>
+        <h1>Consumer360</h1>
+        <div class="divider"></div>
+        <p class="subtitle">An Automated End-to-End Analytics Pipeline for Modern E-commerce Retailers</p>
+        <div style="margin-top:40px;">
+            <span class="badge">Predictive CLV</span><span class="badge">Cohort Analysis</span>
+            <span class="badge">Market Basket</span><span class="badge">Automated SQL</span>
+        </div>
+    </section>
 
-<!-- SLIDE 3: REVENUE TREND -->
-<section class="slide" id="s3">
-  <p class="section-title">Revenue Analysis</p>
-  <h2>Monthly Revenue Trend</h2>
-  <div class="divider"></div>
-  <div class="chart-wrap">
-    <canvas id="trendChart" height="120"></canvas>
-  </div>
-  <p style="color:#64748b;font-size:.85rem;text-align:center">Q4 peaks driven by holiday season demand — Nov 2010 & Nov 2011 both exceeded £1.1M</p>
-</section>
+    <!-- SLIDE 2: CORE KPIs -->
+    <section class="slide" id="kpi">
+        <p class="section-title">Business Pulse</p>
+        <h2>The Core Metrics</h2>
+        <div class="divider"></div>
+        <div class="kpi-grid">
+            <div class="kpi"><div class="kpi-value">17.32M</div><div class="kpi-label">Total Revenue</div></div>
+            <div class="kpi"><div class="kpi-value">5,860</div><div class="kpi-label">Unique Customers</div></div>
+            <div class="kpi"><div class="kpi-value">36K</div><div class="kpi-label">Total Orders</div></div>
+            <div class="kpi"><div class="kpi-value">6.83M</div><div class="kpi-label">Expected Revenue Forecast</div></div>
+        </div>
+    </section>
 
-<!-- SLIDE 4: GEOGRAPHY -->
-<section class="slide" id="s4">
-  <p class="section-title">Geographic Performance</p>
-  <h2>Revenue by Country</h2>
-  <div class="divider"></div>
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;max-width:1000px;width:100%;margin:20px 0">
-    <div class="chart-wrap" style="margin:0"><canvas id="geoChart" height="220"></canvas></div>
-    <div style="display:flex;flex-direction:column;gap:10px;justify-content:center">
-      <div class="insight-card red" style="padding:16px">
-        <h3>UK Dominance</h3>
-        <p>United Kingdom generates <strong style="color:#f43f5e">82.7%</strong> of total revenue (£13.2M) with 5,396 customers — heavy concentration risk.</p>
-      </div>
-      <div class="insight-card blue" style="padding:16px">
-        <h3>High-Value International</h3>
-        <p>Netherlands: only 23 customers but £536K revenue — <strong style="color:#60a5fa">£23,320 avg per customer</strong> vs £2,447 for UK.</p>
-      </div>
-      <div class="insight-card green" style="padding:16px">
-        <h3>Growth Opportunity</h3>
-        <p>EIRE & Germany show strong repeat orders. Expanding EU presence could reduce UK dependency.</p>
-      </div>
-    </div>
-  </div>
-</section>
+    <!-- SLIDE 3: REVENUE TRENDS -->
+    <section class="slide" id="trends">
+        <p class="section-title">Dashboard 1: Sales Analysis</p>
+        <h2>Monthly Revenue Trend</h2>
+        <div class="divider"></div>
+        <div class="chart-container"><canvas id="revenueChart" height="100"></canvas></div>
+    </section>
 
-<!-- SLIDE 5: PRODUCTS -->
-<section class="slide" id="s5">
-  <p class="section-title">Product Intelligence</p>
-  <h2>Top Products & Day Performance</h2>
-  <div class="divider"></div>
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;max-width:1100px;width:100%">
-    <div>
-      <p style="color:#94a3b8;font-size:.85rem;margin-bottom:12px;text-transform:uppercase;letter-spacing:1px">Top 5 Products by Revenue</p>
-      <table>
-        <tr><th>#</th><th>Product</th><th>Revenue</th><th>Buyers</th></tr>
-        <tr><td>1</td><td>Regency Cakestand 3 Tier</td><td style="color:#10b981">£273K</td><td>1,309</td></tr>
-        <tr><td>2</td><td>White Hanging Heart T-Light</td><td style="color:#10b981">£244K</td><td>1,489</td></tr>
-        <tr><td>3</td><td>Jumbo Bag Red White Spotty</td><td style="color:#10b981">£167K</td><td>975</td></tr>
-        <tr><td>4</td><td>Assorted Colour Bird Ornament</td><td style="color:#10b981">£123K</td><td>1,005</td></tr>
-        <tr><td>5</td><td>Party Bunting</td><td style="color:#10b981">£103K</td><td>893</td></tr>
-      </table>
-    </div>
-    <div>
-      <p style="color:#94a3b8;font-size:.85rem;margin-bottom:12px;text-transform:uppercase;letter-spacing:1px">Revenue by Day of Week</p>
-      <div class="chart-wrap" style="margin:0;padding:20px"><canvas id="dayChart" height="160"></canvas></div>
-    </div>
-  </div>
-</section>
+    <!-- SLIDE 4: GEOGRAPHIC REACH -->
+    <section class="slide" id="geo">
+        <p class="section-title">Dashboard 2: Global Heatmap</p>
+        <h2>Top Revenue Generating Countries</h2>
+        <div class="divider"></div>
+        <div class="chart-container"><canvas id="geoChart" height="100"></canvas></div>
+    </section>
 
-<!-- SLIDE 6: INSIGHTS -->
-<section class="slide" id="s6">
-  <p class="section-title">Actionable Insights</p>
-  <h2>Key Business Recommendations</h2>
-  <div class="divider"></div>
-  <div class="insight-grid">
-    <div class="insight-card red">
-      <h3>⚠ Geographic Concentration Risk</h3>
-      <p>82.7% revenue from UK alone. A single market disruption could severely impact business. Prioritise EIRE, Germany and France for growth campaigns.</p>
-      <span class="tag warn">High Priority</span>
-    </div>
-    <div class="insight-card green">
-      <h3>💡 Q4 Seasonal Spike</h3>
-      <p>Revenue jumps 65-90% in Oct–Nov every year. Pre-load inventory and run targeted campaigns in September to capture early holiday shoppers.</p>
-      <span class="tag">Action: Sep Campaign</span>
-    </div>
-    <div class="insight-card blue">
-      <h3>📈 Netherlands High-Value Segment</h3>
-      <p>23 Netherlands customers average £23,320 each — 9.5× the UK average. Launch VIP programme targeting B2B wholesale buyers in NL.</p>
-      <span class="tag info">Revenue Opportunity</span>
-    </div>
-    <div class="insight-card purple">
-      <h3>📅 Thursday is Peak Day</h3>
-      <p>Thursday drives £3.46M (21.7% of revenue) with 156K orders. Schedule email campaigns and promotions on Tuesday–Wednesday for Thursday conversion.</p>
-      <span class="tag info">Marketing Timing</span>
-    </div>
-    <div class="insight-card green">
-      <h3>🏆 Top 3 Products = £680K</h3>
-      <p>Regency Cakestand, White Heart T-Light, and Jumbo Bag together drive £680K. Ensure these are always in stock and cross-promoted.</p>
-      <span class="tag">Stock Priority</span>
-    </div>
-    <div class="insight-card red">
-      <h3>⚡ Weekend Revenue Gap</h3>
-      <p>Saturday generates only £9,803 — nearly zero. The business is effectively closed on weekends. Online self-service ordering could capture lost weekend demand.</p>
-      <span class="tag warn">Gap Identified</span>
-    </div>
-  </div>
-</section>
+    <!-- SLIDE 5: RFM SEGMENTS (DOUGHNUT) -->
+    <section class="slide" id="rfm-dist">
+        <p class="section-title">Dashboard 3: Customer Segmentation</p>
+        <h2>Revenue by Customer Segment</h2>
+        <div class="divider"></div>
+        <div class="chart-container" style="max-width:500px;"><canvas id="rfmChart" height="250"></canvas></div>
+    </section>
 
-<!-- SLIDE 7: PIPELINE & AUTOMATION -->
-<section class="slide footer-slide" id="s7">
-  <p class="section-title">Technical Architecture</p>
-  <h2>Automated Pipeline</h2>
-  <div class="divider"></div>
-  <div class="pipeline-steps">
-    <div class="step"><div class="step-icon">📊</div><div class="step-title">Excel Source</div><div class="step-label">1M+ rows</div></div>
-    <div class="step"><div class="step-icon">🧹</div><div class="step-title">Data Cleaning</div><div class="step-label">Python / Pandas</div></div>
-    <div class="step"><div class="step-icon">🗄</div><div class="step-title">SQL Server</div><div class="step-label">Star Schema</div></div>
-    <div class="step"><div class="step-icon">🤖</div><div class="step-title">RFM Analysis</div><div class="step-label">Segmentation</div></div>
-    <div class="step"><div class="step-icon">📈</div><div class="step-title">Power BI</div><div class="step-label">Dashboard</div></div>
-  </div>
-  <div style="background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.25);border-radius:14px;padding:20px 30px;max-width:700px;text-align:center;margin:10px 0">
-    <p style="color:#10b981;font-weight:700;font-size:1rem">✅ Task Scheduler Configured</p>
-    <p style="color:#64748b;font-size:.9rem;margin-top:6px">Consumer360_Weekly_Pipeline · Every Sunday 11:00 PM · Auto-logged</p>
-  </div>
-  <div class="kpi-grid" style="max-width:700px;margin-top:10px">
-    <div class="kpi"><div class="kpi-value" style="font-size:1.5rem">5,924</div><div class="kpi-label">Customers Loaded</div></div>
-    <div class="kpi"><div class="kpi-value" style="font-size:1.5rem">775K</div><div class="kpi-label">Transactions</div></div>
-    <div class="kpi"><div class="kpi-value" style="font-size:1.5rem">0</div><div class="kpi-label">Errors on Last Run</div></div>
-  </div>
-</section>
+    <!-- SLIDE 6: RFM SCATTER -->
+    <section class="slide" id="rfm-scatter">
+        <p class="section-title">Dashboard 4: RFM Deep Dive</p>
+        <h2>Recency vs Frequency by Monetary Value</h2>
+        <div class="divider"></div>
+        <div class="chart-container"><canvas id="scatterChart" height="120"></canvas></div>
+    </section>
 
-<script>
-const pal=['#818cf8','#c084fc','#fb7185','#34d399','#60a5fa','#fbbf24'];
-const gridColor='rgba(255,255,255,0.05)';
-const fontColor='#94a3b8';
+    <!-- SLIDE 7: TOP PRODUCTS -->
+    <section class="slide" id="products">
+        <p class="section-title">Dashboard 5: Market Basket</p>
+        <h2>Top Best Selling Products</h2>
+        <div class="divider"></div>
+        <div class="chart-container"><canvas id="productsChart" height="120"></canvas></div>
+    </section>
 
-// Trend chart
-const months=['Dec-09','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov-10','Dec','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov-11','Dec'];
-const rev=[657,528,485,631,556,555,565,559,583,775,956,1120,549,472,434,577,424,646,604,572,613,927,970,1119,97];
-new Chart(document.getElementById('trendChart'),{
-  type:'line',
-  data:{labels:months,datasets:[{label:'Revenue (£K)',data:rev,borderColor:'#818cf8',backgroundColor:'rgba(129,140,248,0.15)',borderWidth:2.5,pointRadius:3,pointBackgroundColor:'#818cf8',fill:true,tension:0.4}]},
-  options:{responsive:true,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>'£'+ctx.raw+'K'}}},scales:{x:{ticks:{color:fontColor,font:{size:10}},grid:{color:gridColor}},y:{ticks:{color:fontColor,callback:v=>'£'+v+'K'},grid:{color:gridColor}}}}
-});
+    <!-- SLIDE 8: COHORT RETENTION (DECAY CURVE) -->
+    <section class="slide" id="retention">
+        <p class="section-title">Dashboard 6: Cohort Analysis</p>
+        <h2>Customer Retention Decay Curve</h2>
+        <div class="divider"></div>
+        <div class="chart-container"><canvas id="decayChart" height="120"></canvas></div>
+    </section>
 
-// Geo chart
-new Chart(document.getElementById('geoChart'),{
-  type:'doughnut',
-  data:{labels:['United Kingdom','EIRE','Netherlands','Germany','France','Others'],datasets:[{data:[13204,568,536,405,313,946],backgroundColor:pal,borderWidth:0,hoverOffset:8}]},
-  options:{responsive:true,plugins:{legend:{position:'bottom',labels:{color:fontColor,font:{size:11},padding:12}}}}
-});
+    <!-- SLIDE 9: PREDICTIVE CLV -->
+    <section class="slide" id="clv">
+        <p class="section-title">Dashboard 7: Machine Learning</p>
+        <h2>Top 5 High-Potential Customers (Predictive CLV)</h2>
+        <div class="divider"></div>
+        <div class="chart-container"><canvas id="clvChart" height="120"></canvas></div>
+        <p class="subtitle" style="font-size:1rem;">Customer 18102 is projected to spend over £218K in the next 12 months.</p>
+    </section>
 
-// Day chart
-new Chart(document.getElementById('dayChart'),{
-  type:'bar',
-  data:{labels:['Thu','Tue','Wed','Mon','Fri','Sun','Sat'],datasets:[{data:[3463,3003,2836,2574,2369,1719,10],backgroundColor:['#818cf8','#818cf8','#818cf8','#818cf8','#818cf8','#818cf8','#f43f5e'],borderRadius:6}]},
-  options:{responsive:true,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>'£'+ctx.raw.toLocaleString()+'K'}}},scales:{x:{ticks:{color:fontColor},grid:{color:gridColor}},y:{ticks:{color:fontColor,callback:v=>'£'+v+'K'},grid:{color:gridColor}}}}
-});
+    <!-- SLIDE 10: STRATEGIC INSIGHTS -->
+    <section class="slide" id="insights">
+        <p class="section-title">Strategic Intelligence</p>
+        <h2>Actionable Business Insights</h2>
+        <div class="divider"></div>
+        <div class="insight-grid">
+            <div class="insight-card priority"><h3>High Concentration Risk</h3><p>Revenue is heavily skewed towards the UK and Australia. Prioritize expanding into European markets.</p></div>
+            <div class="insight-card success"><h3>Top Product Synergy</h3><p>World War 2 Gliders and Jumbo Bags dominate sales. Bundle these items with lower-performing products to boost overall volume.</p></div>
+            <div class="insight-card success"><h3>VIP Discovery (CLV)</h3><p>Customer 18102 and 14646 show massive future potential (>£170K each). Assign dedicated account managers immediately.</p></div>
+            <div class="insight-card priority"><h3>Cohort Drop-off</h3><p>Significant retention decay observed after Month 2. Automated re-engagement emails required at the 60-day mark.</p></div>
+        </div>
+    </section>
 
-// Nav highlight
-const sections=document.querySelectorAll('.slide');
-const links=document.querySelectorAll('.nav a');
-const obs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){const i=[...sections].indexOf(e.target);links.forEach((l,j)=>l.classList.toggle('active',i===j))}})},{threshold:0.5});
-sections.forEach(s=>obs.observe(s));
-</script>
+    <!-- SLIDE 11: TECHNICAL ARCHITECTURE -->
+    <section class="slide" id="tech" style="background:rgba(16, 185, 129, 0.02);">
+        <p class="section-title">Technical Handoff</p>
+        <h2>Automated Pipeline Flow</h2>
+        <div class="divider"></div>
+        <div class="pipeline-flow">
+            <div class="step"><div class="step-circle">📂</div><div class="step-name">Excel Data</div></div>
+            <div class="step"><div class="step-circle">🧹</div><div class="step-name">Cleaning Script</div></div>
+            <div class="step"><div class="step-circle">🗄️</div><div class="step-name">SQL Database</div></div>
+            <div class="step"><div class="step-circle">🧠</div><div class="step-name">RFM & ML</div></div>
+            <div class="step"><div class="step-circle">📊</div><div class="step-name">Power BI</div></div>
+        </div>
+        <div style="margin-top:50px; text-align:center;">
+            <p style="color:#10b981; font-weight:700; font-size:1.2rem;">Pipeline Status: VERIFIED & LIVE</p>
+            <p style="color:#64748b; margin-top:10px;">Consumer360 Scheduler executes every Sunday at 11:00 PM</p>
+        </div>
+    </section>
+
+    <script>
+        Chart.defaults.color = '#94a3b8';
+        const gridColor = 'rgba(255, 255, 255, 0.05)';
+
+        // 1. Revenue Chart (Line)
+        new Chart(document.getElementById('revenueChart').getContext('2d'), {
+            type: 'line',
+            data: { labels: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'], datasets: [{ label: 'Total Revenue', data: [1172, 1037, 832, 679, 639, 645, 600, 592, 585, 506, 447, 100], borderColor: '#60a5fa', backgroundColor: 'rgba(96, 165, 250, 0.1)', fill: true, tension: 0.4 }] },
+            options: { plugins: { legend: { display: false } }, scales: { x: { grid: { color: gridColor } }, y: { grid: { color: gridColor } } } }
+        });
+
+        // 2. Geo Chart (Bar)
+        new Chart(document.getElementById('geoChart').getContext('2d'), {
+            type: 'bar',
+            data: { labels: ['Australia', 'Switzerland', 'Sweden', 'Germany', 'France'], datasets: [{ label: 'Revenue (M)', data: [0.16, 0.10, 0.09, 0.08, 0.07], backgroundColor: '#60a5fa', borderRadius: 4 }] },
+            options: { indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { grid: { color: gridColor } }, y: { grid: { display: false } } } }
+        });
+
+        // 3. RFM Doughnut Chart
+        new Chart(document.getElementById('rfmChart').getContext('2d'), {
+            type: 'doughnut',
+            data: { labels: ['Champions', 'Loyal', 'Potential', 'At Risk', 'Hibernating'], datasets: [{ data: [20, 25, 15, 25, 15], backgroundColor: ['#34d399','#60a5fa','#c084fc','#fb7185','#94a3b8'], borderWidth: 0 }] },
+            options: { plugins: { legend: { position: 'right' } }, cutout: '70%' }
+        });
+
+        // 4. RFM Scatter Chart
+        new Chart(document.getElementById('scatterChart').getContext('2d'), {
+            type: 'bubble',
+            data: { datasets: [
+                { label: 'Champions', data: [{x: 2000, y: 2500, r: 15}], backgroundColor: '#60a5fa' },
+                { label: 'Loyal Customers', data: [{x: 1200, y: 1500, r: 10}], backgroundColor: '#fb7185' },
+                { label: 'Price Sensitive', data: [{x: 3800, y: 3500, r: 20}], backgroundColor: '#818cf8' },
+                { label: 'Hibernating', data: [{x: 3500, y: 100, r: 8}], backgroundColor: '#c084fc' }
+            ]},
+            options: { plugins: { legend: { position: 'top' } }, scales: { x: { grid: { color: gridColor }, title: {display: true, text: 'Sum of r_score'} }, y: { grid: { color: gridColor }, title: {display: true, text: 'Sum of f_score'} } } }
+        });
+
+        // 5. Top Products (Horizontal Bar)
+        new Chart(document.getElementById('productsChart').getContext('2d'), {
+            type: 'bar',
+            data: { labels: ['WORLD WAR 2 GLIDER', 'JUMBO BAG RED WHITE', 'WHITE HANGING HEART', 'PACK OF 72 RETRO', 'ASSORTED COLOUR BIRD'], datasets: [{ label: 'Quantity (K)', data: [108, 95, 93, 91, 79], backgroundColor: '#059669', borderRadius: 2 }] },
+            options: { indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { grid: { color: gridColor } }, y: { grid: { display: false } } } }
+        });
+
+        // 6. Cohort Decay Chart (Line)
+        new Chart(document.getElementById('decayChart').getContext('2d'), {
+            type: 'line',
+            data: { labels: ['M1','M2','M3','M4','M5','M6','M7','M8','M9','M10','M11','M12'], datasets: [{ label: 'Retention %', data: [100, 35, 28, 25, 22, 21, 20, 19, 18, 18, 17, 16], borderColor: '#fb7185', backgroundColor: 'rgba(251, 113, 133, 0.1)', fill: true, tension: 0.4 }] },
+            options: { plugins: { legend: { display: false } }, scales: { x: { grid: { color: gridColor } }, y: { grid: { color: gridColor } } } }
+        });
+
+        // 7. CLV Chart (Horizontal Bar)
+        new Chart(document.getElementById('clvChart').getContext('2d'), {
+            type: 'bar',
+            data: { labels: ['Cust 18102', 'Cust 14646', 'Cust 17450', 'Cust 14156', 'Cust 12415'], datasets: [{ label: 'Predicted CLV (£K)', data: [218, 176, 116, 107, 69], backgroundColor: '#818cf8', borderRadius: 2 }] },
+            options: { indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { grid: { color: gridColor }, title: {display: true, text: 'Sum of predicted_clv (£K)'} }, y: { grid: { display: false } } } }
+        });
+
+        // Navigation Highlight Logic
+        const sections = document.querySelectorAll('.slide'), dots = document.querySelectorAll('.dot-nav a');
+        window.onscroll = () => {
+            let current = "";
+            sections.forEach(s => { if (pageYOffset >= s.offsetTop - 100) current = s.getAttribute("id"); });
+            dots.forEach(d => { d.classList.remove("active"); if (d.getAttribute("href").includes(current)) d.classList.add("active"); });
+        };
+    </script>
 </body>
 </html>
