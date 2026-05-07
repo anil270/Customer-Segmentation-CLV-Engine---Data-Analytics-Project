@@ -1,54 +1,40 @@
 # ═══════════════════════════════════════════════════════════
-# CONSUMER360: WEEK 1 - DATA CLEANING
-# Purpose: Clean raw data and save to a CSV file
+# CONSUMER360: DATA CLEANING
+# Purpose: Clean raw data and save to a CSV file & Database
 # ═══════════════════════════════════════════════════════════
 
 import pandas as pd
+import data_loader
 
 print("Starting data cleaning process...")
-
-# 1. Load the raw data
-print("Loading raw data from Excel file...")
 df = pd.read_excel('data/raw/online_retail_II.xlsx')
 print(f"Original rows: {len(df)}")
 
-# 2. Fix the column names (make them lowercase and remove spaces)
+# 1. Standardize Columns
 df.columns = df.columns.str.lower().str.replace(' ', '_')
-if 'invoice_date' in df.columns:
-    df.rename(columns={'invoice_date': 'invoicedate'}, inplace=True)
+df.rename(columns={'invoice_date': 'invoicedate'}, inplace=True)
 
-# 3. Remove cancelled orders (invoices starting with 'C')
-df = df[~df['invoice'].astype(str).str.startswith('C')]
-
-# 4. Drop rows that don't have a customer ID
+# 2. Clean Data (Remove missing IDs, Cancellations, and negative/bad values)
 df = df.dropna(subset=['customer_id'])
-
-# 5. Remove bad data (negative/zero quantities and prices)
+df = df[~df['invoice'].astype(str).str.startswith('C')]
 df['quantity'] = pd.to_numeric(df['quantity'], errors='coerce')
 df['price'] = pd.to_numeric(df['price'], errors='coerce')
-df = df[(df['quantity'] > 0) & (df['price'] > 0)]
+df = df[(df['quantity'] > 0) & (df['price'] > 0)].copy()
 
-# 6. Fix data types
+# 3. Format Types & Add Business Features
 df['customer_id'] = df['customer_id'].astype(int)
 df['invoicedate'] = pd.to_datetime(df['invoicedate'])
-
-# 7. Add useful calculated columns
 df['total_amount'] = df['quantity'] * df['price']
 df['date_only'] = df['invoicedate'].dt.date
 
 print(f"Data cleaned! Remaining rows: {len(df)}")
 
-# 8. Save the cleaned data to a new CSV file
-print("Saving cleaned data to CSV...")
+# 4. Save to CSV and Database
 df.to_csv('data/processed/cleaned_retail.csv', index=False)
-
-# 9. Upload the cleaned data to SQL Server
-print("Uploading cleaned data to SQL Server...")
 try:
-    import data_loader
+    print("Uploading to SQL Server...")
     data_loader.load_to_sql_server(df)
-    print("Data uploaded to SQL Server successfully!")
 except Exception as e:
-    print(f"Error uploading to SQL Server: {e}")
+    print(f"Error uploading: {e}")
 
-print("\nAll done!")
+print("Data Cleaning Complete!")
