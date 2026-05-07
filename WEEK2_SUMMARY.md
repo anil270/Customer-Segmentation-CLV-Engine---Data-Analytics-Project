@@ -1,84 +1,46 @@
-# WEEK 2: RFM ANALYSIS & MARKET BASKET — COMPLETE SUMMARY
+#  WEEK 2: RFM ANALYSIS & MARKET BASKET
 
 ## Overview
-Week 2 focused on extracting business intelligence from the cleaned data by building advanced analytical models. The goal was to understand customer behavior and product relationships.
+Week 2 added the "Intelligence" layer. We built two analytical engines in Python to understand exactly who our customers are and which products they love to buy together.
 
 ## Technical Execution
-During this week, we worked on two primary analytical engines:
-1. **RFM Analysis Engine**: `python/rfm_analysis.py`
-2. **Market Basket Engine**: `python/market_basket.py`
-
-These scripts process the cleaned data from Week 1 and generate predictive insights that are loaded back into the SQL Server database.
-
+- **RFM Engine**: `python/rfm_analysis.py`
+- **MBA Engine**: `python/market_basket.py`
 ---
-
-## Part 1: RFM Analysis
+## Part 1: RFM Analysis (Segmentation)
+We segmented **5,860 unique customers** based on three metrics:
+1. **Recency**: How many days since their last order?
+## Part 1: RFM Analysis & Predictive CLV
 
 ### What is RFM?
 RFM stands for Recency, Frequency, Monetary. It is a proven marketing technique to segment customers based on their purchase behavior.
 
-### How We Calculated RFM
-1. **Raw Metrics**: Calculated Recency (days since last purchase), Frequency (total unique orders), and Monetary (total spend) for each customer.
-2. **Scoring (1-5 Scale)**: Used `pd.qcut()` to divide customers into 5 equal buckets for each metric.
-3. **Segmentation**: Combined scores to assign labels like Champions, Loyal, At Risk, and Hibernating.
-
-### RFM Results (Actual Output)
-- **Total customers analyzed**: 5,860
-- **Recency range**: 27 to 760 days
-- **Frequency range**: 1 to 391 purchases
-- **Monetary range**: £2.90 to £597,336.11
-
-#### Segment Distribution
-
-| Segment           | Customers | %     | Avg Recency | Avg Frequency | Avg Monetary   | Total Revenue    |
-|-------------------|-----------|-------|-------------|---------------|----------------|------------------|
-| Price Sensitive   | 1,983     | 33.8% | 377 days    | 1.6           | £519.00        | £1,029,173.78    |
-| Hibernating       | 1,075     | 18.3% | 118 days    | 5.5           | £2,153.01      | £2,314,488.25    |
-| Promising         | 728       | 12.4% | 55 days     | 5.3           | £1,766.71      | £1,286,167.11    |
-| Champions         | 454       | 7.7%  | 35 days     | 28.7          | £17,809.22     | £8,085,386.88    |
-| **TOTAL**         | **5,860** | **100%** |          |               |                | **£17,324,932**  |
-
-#### Key Insights from RFM
-- **Insight 1**: Champions (7.7% customers) drive **46.7% of Revenue**. Action: VIP program and loyalty rewards.
-- **Insight 2**: **Can't Lose Them** segment needs urgent action. High-value customers who have gone silent for 500+ days. Action: Immediate win-back campaigns.
+### Predictive CLV Modeling
+Using the **`lifetimes`** library, we implemented predictive modeling (BG/NBD and Gamma-Gamma models) to estimate the **future value** of each customer for the next 12 months. This allows the business to focus on high-potential customers before they even spend.
 
 ---
 
-## Part 2: Market Basket Analysis
+## Part 2: Cohort Analysis (Retention)
 
-### What is Market Basket Analysis?
-Market Basket Analysis finds products that are frequently bought together using Association Rule Mining (Apriori/FP-Growth).
+### What is Cohort Analysis?
+It tracks how many customers from a specific "Join Month" (Cohort) continue to buy in subsequent months.
 
-### How We Did It
-1. **Transaction Matrix**: Created a matrix of invoices vs products (1 if present, 0 if not).
-2. **FP-Growth Algorithm**: Used the `mlxtend` library to find frequent itemsets with a min support of 1-3%.
-3. **Rule Generation**: Calculated Support, Confidence, and Lift for product pairs.
-
-### Market Basket Results (Actual Output)
-- **Total transactions analyzed**: 36,457
-- **Unique products**: 4,630
-- **High-quality rules**: 254 (Confidence >= 50%, Lift > 1.0)
-
-#### Top Product Associations
-
-| If Customer Buys | They Also Buy | Confidence | Lift |
-|-----------------|---------------|------------|------|
-| POPPY'S PLAYHOUSE LIVINGROOM | POPPY'S PLAYHOUSE BEDROOM | 83% | 54.82x |
-| PINK SPOTTY CUP | BLUE SPOTTY CUP | 70% | 45.29x |
-| WOODEN TREE CHRISTMAS SCANDINAVIAN | WOODEN STAR CHRISTMAS SCANDINAVIAN | 79% | 44.99x |
-
-#### Key Insights from MBA
-- **Insight 1**: Poppy's Playhouse Bundle Opportunity. All 3 playhouse items are bought together with 80%+ confidence. Action: Create a discounted bundle.
-- **Insight 2**: Cross-Selling Engine. Use the 254 rules to power "Customers who bought X also bought Y" recommendations.
+### Key Insights:
+- **Retention Rates**: We can now see exactly when customers stop buying (e.g., "Month 3 Churn") and target them with retention offers.
+- **Acquisition Quality**: Compares which months brought in the most loyal customers.
 
 ---
 
-## Files Produced in Week 2
+## Part 3: Market Basket Analysis (Association)
+We analyzed over **36,000 transactions** to find product relationships. Using the **FP-Growth** algorithm, we generated **254 high-quality rules**.
 
-| File | Location | Description |
-|------|----------|-------------|
-| `rfm_analysis.py` | `python/` | Primary script for segmentation |
-| `market_basket.py` | `python/` | Primary script for association rules |
-| `rfm_segmentation.csv` | `data/processed/` | Exported metrics for all customers |
-| `market_basket_rules.csv` | `data/processed/` | Exported association rules |
-| `rfm_segmentation` (SQL) | SQL Server | Database table for Power BI |
+### Examples of Insights:
+- **Product Bundling**: If a customer buys "Poppy's Playhouse Bedroom," they are 83% likely to buy the "Living Room" set.
+- **Cross-Selling**: We identified 254 specific "Frequently Bought Together" pairs to power recommendation engines.
+---
+## Outputs Generated
+- **`rfm_segmentation`**: Uploaded to SQL Server for live Power BI dashboards.
+- **`market_basket_rules`**: Uploaded to SQL Server for cross-selling analysis.
+- **Processed CSVs**: Stored in `data/processed/` for offline review.
+---
+**Status**: Analytical Models are Live and Feeding Data to SQL.
