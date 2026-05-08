@@ -1,23 +1,46 @@
-# Excel files
-*.xlsx
-*.xls
+# ═══════════════════════════════════════════════════════════
+# CONSUMER360: GIT IGNORE CONFIGURATION
+# ═══════════════════════════════════════════════════════════
 
-# Python
+# Python & Virtual Environments
 __pycache__/
 *.py[cod]
-*.egg-info/
+*$py.class
+.venv/
+env/
+venv/
 .env
 
-# Power BI
+# Data Files (Keep raw source, ignore processed/large data)
+*.csv
+!data/raw/*.xlsx
+# If you want to keep small lookup CSVs, un-comment below:
+# !data/lookup/*.csv
+
+# Power BI & Temporary Files
 *.pbix.bak
+*.pbit
+*.pbip
+*.pbix.zip
 
-# OS
-.DS_Store
-Thumbs.db
-
-# IDE
+# IDE & Editor Specific
 .vscode/
 .idea/
+*.swp
+*.swo
 
-# Data (optional - large files)
-data/raw/*.xlsx
+# OS Specific
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Logs
+*.log
+logs/
+
+# Miscellaneous
+.ipynb_checkpoints
+node_modules/
+dist/
+build/
