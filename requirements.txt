@@ -1,0 +1,13 @@
+# ═══════════════════════════════════════════════════════════
+# CONSUMER360: PROJECT DEPENDENCIES
+# ═══════════════════════════════════════════════════════════
+
+# Core Data & Analysis
+pandas
+openpyxl
+mlxtend
+lifetimes
+
+# Database Connectivity (SQL Server)
+pyodbc
+SQLAlchemy
